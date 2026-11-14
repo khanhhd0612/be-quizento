@@ -10,12 +10,12 @@ export const CORRELATION_ID_HEADER = 'x-request-id';
  */
 @Injectable()
 export class CorrelationIdMiddleware implements NestMiddleware {
-    use(req: Request, res: Response, next: NextFunction): void {
-        const incomingId = req.headers[CORRELATION_ID_HEADER] as string | undefined;
-        const requestId = incomingId || uuidv4();
+  use(req: Request, res: Response, next: NextFunction): void {
+    const incomingId = req.headers[CORRELATION_ID_HEADER] as string | undefined;
+    const requestId = incomingId || uuidv4();
 
-        (req as any).id = requestId;
-        res.setHeader(CORRELATION_ID_HEADER, requestId);
-        next();
-    }
+    (req as any).id = requestId;
+    res.setHeader(CORRELATION_ID_HEADER, requestId);
+    next();
+  }
 }

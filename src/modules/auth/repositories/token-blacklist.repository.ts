@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@database/prisma/prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { BlacklistedToken } from '../entities/blacklisted-token.entity';
 
 @Injectable()
 export class TokenBlacklistRepository {
-    constructor(private readonly prisma: PrismaService) { }
+  constructor(
+    @InjectModel(BlacklistedToken.name)
+    private readonly blacklistedTokenModel: Model<BlacklistedToken>,
+  ) {}
 
-    async exists(jti: string): Promise<boolean> {
-        const record = await this.prisma.blacklistedToken.findUnique({
-            where: { jti },
-            select: { id: true }, // chỉ lấy field cần thiết
-        });
-        return !!record;
-    }
+  async exists(jti: string): Promise<boolean> {
+    const record = await this.blacklistedTokenModel.findOne({ jti }).select('_id').lean().exec();
+    return !!record;
+  }
 
-    async create(data: { jti: string; userId: string; expiresAt: Date }): Promise<void> {
-        await this.prisma.blacklistedToken.create({ data });
-    }
+  async create(data: { jti: string; userId: string; expiresAt: Date }): Promise<void> {
+    await this.blacklistedTokenModel.create(data);
+  }
 }

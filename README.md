@@ -1,4 +1,4 @@
-# Backend Service — NestJS + MongoDB (Prisma)
+# Backend Service — NestJS + MongoDB (Mongoose)
 
 NestJS chuẩn production: cấu trúc module/domain, ConfigModule + validate env,
 response chuẩn hoá, global exception filter, ValidationPipe, logger tập trung (pino),
@@ -8,8 +8,7 @@ Swagger, health check, rate limit, Docker hoá, CI/CD, code convention.
 
 ```bash
 cp .env.example .env.dev      # rồi chỉnh DATABASE_URL, JWT secrets...
-npm install                   # sẽ tự chạy `prisma generate` qua postinstall
-npm run prisma:push           # đồng bộ schema.prisma xuống MongoDB
+npm install
 npm run seed                  # tạo tài khoản admin mặc định
 npm run start:dev
 ```
@@ -18,10 +17,10 @@ npm run start:dev
 - Swagger: http://localhost:3000/docs
 - Health check: http://localhost:3000/api/v1/health
 
-## Database: MongoDB qua Prisma
+## Database: MongoDB qua Mongoose
 
 Xem chi tiết tại `src/database/README.md`. Tóm tắt:
-- `prisma/schema.prisma`: khai báo model (nguồn sự thật của schema).
+- Các Schema được định nghĩa tại `src/modules/*/schemas/*.schema.ts`.
 
 ## Cấu trúc thư mục
 
@@ -35,9 +34,6 @@ Xem chi tiết cây thư mục và vai trò từng phần trong `docs/STRUCTURE.
 | `npm run build` | Build production |
 | `npm run lint` | ESLint + tự fix |
 | `npm run test` / `test:e2e` | Unit test / e2e test |
-| `npm run prisma:generate` | Sinh lại Prisma Client sau khi sửa schema |
-| `npm run prisma:push` | Đồng bộ schema xuống MongoDB |
-| `npm run prisma:studio` | Mở giao diện xem/sửa dữ liệu |
 | `npm run seed` | Seed tài khoản admin mặc định (admin@example.com / Admin@123) |
 
 ## Quy ước code & git

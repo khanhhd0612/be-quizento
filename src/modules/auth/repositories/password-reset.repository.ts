@@ -1,40 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@database/prisma/prisma.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { PasswordResetToken } from '../entities/password-reset-token.entity';
 
 @Injectable()
 export class PasswordResetRepository {
-    constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @InjectModel(PasswordResetToken.name)
+    private readonly passwordResetModel: Model<PasswordResetToken>,
+  ) {}
 
-    countRecentByEmail(email: string, since: Date) {
-        return this.prisma.passwordResetToken.count({
-            where: { email, createdAt: { gte: since } },
-        });
-    }
+  async countRecentByEmail(email: string, since: Date) {
+    return this.passwordResetModel
+      .countDocuments({
+        email,
+        createdAt: { $gte: since },
+      })
+      .exec();
+  }
 
-    create(data: {
-        email: string;
-        userId: string | null;
-        usedAt: string | null;
-        tokenHash: string;
-        expiresAt: Date;
-    }) {
-        return this.prisma.passwordResetToken.create({ data });
-    }
+  async create(data: {
+    email: string;
+    userId?: string | null;
+    tokenHash: string;
+    expiresAt: Date;
+    usedAt?: Date | null;
+  }) {
+    const record = await this.passwordResetModel.create(data);
+    return record.toObject ? record.toObject() : record;
+  }
 
-    findValidByHash(tokenHash: string) {
-        return this.prisma.passwordResetToken.findFirst({
-            where: {
-                tokenHash,
-                usedAt: null,
-                expiresAt: { gt: new Date() },
-            },
-        });
-    }
+  async findValidByHash(tokenHash: string) {
+    return this.passwordResetModel
+      .findOne({
+        tokenHash,
+        usedAt: null,
+        expiresAt: { $gt: new Date() },
+      })
+      .lean({ virtuals: true })
+      .exec();
+  }
 
-    markUsed(id: string) {
-        return this.prisma.passwordResetToken.update({
-            where: { id },
-            data: { usedAt: new Date() },
-        });
-    }
+  async markUsed(id: string) {
+    return this.passwordResetModel.findByIdAndUpdate(id, { usedAt: new Date() }).exec();
+  }
 }

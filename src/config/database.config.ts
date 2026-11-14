@@ -1,8 +1,8 @@
 import { registerAs } from '@nestjs/config';
 
 /**
- * Cấu hình kết nối MongoDB thông qua Prisma.
+ * Cấu hình kết nối MongoDB thông qua Mongoose.
  */
 export default registerAs('database', () => ({
-    url: process.env.DATABASE_URL,
+  url: process.env.DATABASE_URL,
 }));

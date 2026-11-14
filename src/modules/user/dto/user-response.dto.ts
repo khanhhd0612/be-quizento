@@ -24,6 +24,14 @@ export class UserResponseDto {
   isActive: boolean;
 
   @Expose()
+  @ApiProperty({ required: false, nullable: true })
+  avatar?: string;
+
+  @Expose()
+  @ApiProperty({ required: false })
+  authProvider?: string;
+
+  @Expose()
   @ApiProperty()
   createdAt: Date;
 }

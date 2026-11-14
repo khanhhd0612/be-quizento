@@ -1,27 +1,24 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import {
-    ErrorCode,
-    ErrorMessage,
-} from '@common/constants/error-code.constant';
+import { ErrorCode, ErrorMessage } from '@common/constants/error-code.constant';
 
 export interface ErrorDetail {
-    field: string;
-    message: string;
+  field: string;
+  message: string;
 }
 
 export class BusinessException extends HttpException {
-    public readonly errorCode: ErrorCode;
-    public readonly details: ErrorDetail[] | null;
+  public readonly errorCode: ErrorCode;
+  public readonly details: ErrorDetail[] | null;
 
-    constructor(
-        errorCode: ErrorCode,
-        status: HttpStatus = HttpStatus.BAD_REQUEST,
-        message?: string,
-        details?: ErrorDetail[],
-    ) {
-        super(message || ErrorMessage[errorCode], status);
+  constructor(
+    errorCode: ErrorCode,
+    status: HttpStatus = HttpStatus.BAD_REQUEST,
+    message?: string,
+    details?: ErrorDetail[],
+  ) {
+    super(message || ErrorMessage[errorCode], status);
 
-        this.errorCode = errorCode;
-        this.details = details ?? null;
-    }
+    this.errorCode = errorCode;
+    this.details = details ?? null;
+  }
 }
